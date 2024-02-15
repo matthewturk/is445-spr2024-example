@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,59 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.15.0/build/vega-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.22.2/build/vega-embed.min.js"></script>
 </head>
+
 <body>
     <h1>Here's a fun visualization.</h1>
     <div id="viz"></div>
-    
+    <script>
+        const spec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "data": { "url": "https://vega.github.io/editor/data/movies.json" },
+            "hconcat": [
+                {
+                    "layer": [
+                        {
+                            "mark": "bar",
+                            "encoding": {
+                                "x": { "field": "IMDB Rating", "type": "quantitative", "bin": true },
+                                "y": {
+                                    "field": "Worldwide Gross",
+                                    "aggregate": "sum",
+                                    "type": "quantitative"
+                                },
+                                "color": { "value": "grey" }
+                            }
+                        },
+                        {
+                            "mark": "bar",
+                            "transform": [{ "filter": { "param": "interesting_movies" } }],
+                            "encoding": {
+                                "x": { "field": "IMDB Rating", "type": "quantitative", "bin": true },
+                                "y": {
+                                    "field": "Worldwide Gross",
+                                    "aggregate": "sum",
+                                    "type": "quantitative"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "mark": "point",
+                    "params": [{ "name": "interesting_movies", "select": { "type": "point", "fields": ["MPAA Rating"] }, "bind": "legend" }],
+                    "encoding": {
+                        "x": { "field": "Production Budget", "type": "quantitative" },
+                        "y": { "field": "Worldwide Gross", "type": "quantitative" },
+                        "tooltip": { "field": "Title" },
+                        "color": {
+                            "condition": { "param": "interesting_movies", "field": "MPAA Rating" }, "value": "grey"
+                        }
+                    }
+                }
+            ]
+        }
+        vegaEmbed("#viz", spec); 
+    </script>
 </body>
+
 </html>
